@@ -31,10 +31,8 @@ function main() {
         if (score > high_score) {
             high_score = score;
             localStorage.setItem("flappy_high_score", high_score);
-            clearCanvas();
             draw_score();
             draw_high_score();
-
         }
         return;
     }
@@ -69,7 +67,6 @@ function move_bird() {
         dy = 0;
         bird.y = canvas.height - bird.height;
     }
-
     // check if bird has passed pipe
     if (pipes[0].x + pipes[0].width / 2 < bird.x && score_timeout == 0) {
         score++;
@@ -78,7 +75,6 @@ function move_bird() {
     } else if (pipes[0].x + pipes[0].width / 2 > bird.x) {
         score_timeout = 0;
     }
-
 }
 
 function draw_pipes() {
@@ -95,13 +91,13 @@ function draw_pipes() {
 function move_pipes() {
     for (const pipe of pipes) {
         pipe.x -= dx;
-        if (pipe.x + pipe.width < 0) {
-            pipes.shift(); // Remove the first pipe
-        }
     }
-    
-    if (pipes.length < 2) {
+    if (pipes.length == 0) {
         generate_pipe_pair();
+    }
+    // remove pipes that have gone off screen
+    if (pipes[0].x + pipes[0].width < 0 && pipes[1].x + pipes[1].width < 0) {
+        pipes.splice(0, 2);
     }
 }
 
@@ -141,6 +137,8 @@ function draw_high_score() {
     board_ctx.fillText("High Score: " + high_score, 8, 40);
 }
 
+
+// Listen to keyboard events to move the bird
 document.addEventListener("keydown", change_direction);
 
 function change_direction(event) {
@@ -156,3 +154,26 @@ function change_direction(event) {
             break;
     }
 }
+
+// Listen to mouse events to move the bird
+document.addEventListener("mousedown", change_direction_mouse);
+
+function change_direction_mouse(event) {
+    if (has_game_ended()) {
+        location.reload();
+    }
+    dy = -10;
+}
+
+// Listen to touch events to move the bird
+document.addEventListener("touchstart", change_direction_touch);
+
+function change_direction_touch(event) {
+    event.preventDefault(); // Prevent default touch behavior (e.g., scrolling)
+    if (has_game_ended()) {
+        location.reload();
+    }
+    dy = -10;
+}
+
+
