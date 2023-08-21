@@ -35,7 +35,7 @@ function main() {
             draw_score();
             draw_high_score();
 
-        } 
+        }
         return;
     }
     clearCanvas();
@@ -71,13 +71,14 @@ function move_bird() {
     }
 
     // check if bird has passed pipe
-    if( pipes[0].x + pipes[0].width/2 < bird.x && score_timeout == 0) {
-        score++; 
+    if (pipes[0].x + pipes[0].width / 2 < bird.x && score_timeout == 0) {
+        score++;
         score_timeout = 1;
-    } else if (pipes[0].x + pipes[0].width/2 > bird.x) {
+        generate_pipe_pair();
+    } else if (pipes[0].x + pipes[0].width / 2 > bird.x) {
         score_timeout = 0;
     }
-    
+
 }
 
 function draw_pipes() {
@@ -98,7 +99,7 @@ function move_pipes() {
             pipes.shift(); // Remove the first pipe
         }
     }
-
+    
     if (pipes.length < 2) {
         generate_pipe_pair();
     }
@@ -114,17 +115,19 @@ function generate_pipe_pair() {
     pipes.push(lower_pipe, upper_pipe);
 }
 
-function has_game_ended () {
+function has_game_ended() {
     // check if bird has hit pipe
     for (const pipe of pipes) {
-        if (pipe.x <= bird.x && bird.x <= pipe.x + pipe.width) {
+        if ((pipe.x <= bird.x && bird.x <= pipe.x + pipe.width) // bird is between pipe.x and pipe.x + pipe.width
+            || (pipe.x <= bird.x + bird.width && bird.x + bird.width <= pipe.x + pipe.width) // bird is between pipe.x and pipe.x + pipe.width
+        ) {
             if (bird.y <= pipe.y + pipe.height && bird.y + bird.height >= pipe.y) {
                 return true;
             }
         }
     }
     return bird.y + bird.height >= canvas.height;
-}   
+}
 
 function draw_score() {
     board_ctx.font = "16px Arial";
@@ -144,10 +147,10 @@ function change_direction(event) {
     switch (event.key) {
         case "ArrowUp":
         case "w":
-        case "Space":
+        case " ":  
             event.preventDefault(); // Prevent default space behavior (e.g., scrolling)
-            if (has_game_ended()){
-                location.reload(); 
+            if (has_game_ended()) {
+                location.reload();
             }
             dy = -10;
             break;
