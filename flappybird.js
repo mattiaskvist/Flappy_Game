@@ -20,6 +20,10 @@ let score = 0;
 let high_score = localStorage.getItem("flappy_high_score") || 0;
 let score_timeout = 0;
 
+let has_game_started = false;
+let y_diff = 0;
+let start_velocity = 2;
+
 
 main();
 
@@ -35,7 +39,21 @@ function main() {
             draw_high_score();
         }
         return;
+    } else if (!has_game_started) {
+        if (Math.abs(y_diff) >= 30) {
+            start_velocity = start_velocity * -1;
+        }
+        bird.y += start_velocity;
+        y_diff += start_velocity;
+
+        clearCanvas();
+        draw_bird();
+        draw_score();
+        draw_high_score();
+        requestAnimationFrame(main);
+        return;
     }
+
     clearCanvas();
     move_pipes();
     move_bird();
@@ -122,6 +140,7 @@ function has_game_ended() {
             }
         }
     }
+    // check if bird has hit ground
     return bird.y + bird.height >= canvas.height;
 }
 
@@ -145,10 +164,12 @@ function change_direction(event) {
     switch (event.key) {
         case "ArrowUp":
         case "w":
-        case " ":  
+        case " ":
             event.preventDefault(); // Prevent default space behavior (e.g., scrolling)
             if (has_game_ended()) {
                 location.reload();
+            } else if (!has_game_started) {
+                has_game_started = true;
             }
             dy = -10;
             break;
@@ -161,6 +182,8 @@ document.addEventListener("mousedown", change_direction_mouse);
 function change_direction_mouse(event) {
     if (has_game_ended()) {
         location.reload();
+    } else if (!has_game_started) {
+        has_game_started = true;
     }
     dy = -10;
 }
@@ -172,6 +195,8 @@ function change_direction_touch(event) {
     event.preventDefault(); // Prevent default touch behavior (e.g., scrolling)
     if (has_game_ended()) {
         location.reload();
+    } else if (!has_game_started) {
+        has_game_started = true;
     }
     dy = -10;
 }
