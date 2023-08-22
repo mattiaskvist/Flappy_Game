@@ -8,7 +8,7 @@ const pipe_border = 'black';
 const canvas = document.getElementById("flappyboard");
 const board_ctx = canvas.getContext("2d");
 
-const pipe_gap = 150;
+let pipe_gap = 150;
 
 const bird = { x: 150, y: 150, width: 25, height: 25 };
 const pipes = [];
@@ -90,6 +90,9 @@ function move_bird() {
         score++;
         score_timeout = 1;
         generate_pipe_pair();
+        if (pipe_gap > 101) {
+            pipe_gap--
+        }
     } else if (pipes[0].x + pipes[0].width / 2 > bird.x) {
         score_timeout = 0;
     }
@@ -123,8 +126,8 @@ function generate_pipe_pair() {
     const lower_pipe_height = Math.floor(Math.random() * (canvas.height - pipe_gap));
     const upper_pipe_height = canvas.height - lower_pipe_height - pipe_gap;
 
-    const lower_pipe = { x: canvas.width, y: canvas.height - lower_pipe_height, width: 25, height: lower_pipe_height };
-    const upper_pipe = { x: canvas.width, y: 0, width: 25, height: upper_pipe_height };
+    const lower_pipe = { x: canvas.width, y: canvas.height - lower_pipe_height, width: 50, height: lower_pipe_height };
+    const upper_pipe = { x: canvas.width, y: 0, width: 50, height: upper_pipe_height };
 
     pipes.push(lower_pipe, upper_pipe);
 }
